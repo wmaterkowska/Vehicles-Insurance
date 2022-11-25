@@ -14,6 +14,8 @@ public class Insurance {
     @NotNull
     long id; // - id bigint PRIMARY KEY NOT NULL
 
+    @ManyToMany
+    @JoinTable()
     @Column
     long vehicle_id; //- vehicle_id bigint NOT NULL REFERENCES (vehicles.id)
 
@@ -27,6 +29,6 @@ public class Insurance {
     String additionalData; // - ... // pozostałe dane o ofercie ubezpieczeniowej
 
     @Column
-    LocalDateTime timestamp; //- insert_time timestamp NOT NULL
+    LocalDateTime insertTime; //- insert_time timestamp NOT NULL
 
 }

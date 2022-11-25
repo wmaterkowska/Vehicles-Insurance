@@ -31,6 +31,6 @@ public class Vehicle {
 
     @NotNull
     @Column
-    LocalDateTime timestamp; //- insert_time timestamp NOT NULL
+    LocalDateTime insertTime; //- insert_time timestamp NOT NULL
 
 }

@@ -27,6 +27,6 @@ public class User {
     String additionalData; //- ... // pozostałe dane o użytkowniku
 
     @Column
-    LocalDateTime timestamp; //- insert_time timestamp NOT NULL DEFAULT now()
+    LocalDateTime insertTime; //- insert_time timestamp NOT NULL DEFAULT now()
 
 }
