@@ -2,43 +2,44 @@ package org.example;
 
 import java.io.*;
 import java.net.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.Properties;
-import java.util.Scanner;
+import java.sql.SQLException;
 
 public class Server {
 
+    private ServerSocket serverSocket;
+    private Socket clientSocket;
+    private PrintWriter out;
+    private BufferedReader in;
 
-    public static void main(String args[]) throws Exception {
+    public void start(int port) throws IOException, SQLException, ClassNotFoundException {
+        serverSocket = new ServerSocket(port);
+        clientSocket = serverSocket.accept();
 
-        Connection c = null;
-        try {
-            Class.forName("org.postgresql.Driver");
-            c = DriverManager
-                    .getConnection("jdbc:postgresql://localhost:5432/dev",
-                            "postgres", "postgres");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e.getClass().getName()+": "+e.getMessage());
-            System.exit(0);
-        }
-        System.out.println("Opened database successfully");
+        out = new PrintWriter(clientSocket.getOutputStream());
+        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-
-        try ( Socket socket = new Socket() ) {
-
-            InputStream input = socket.getInputStream();
-            InputStreamReader reader = new InputStreamReader(input);
-
-            Long userId = (long) reader.read();
-
-            Crud crud = new Crud();
-
-            if ( crud.isUserWithId(c, userId) == true) {
-                crud.getVehiclesAndInsurances(c, userId);
-            }
-
+        Long userId = (long) in.read();
+        Crud crud = new Crud();
+        if (userId != null) {
+            out.print(crud.isUserWithId(userId));
+        } else {
+            out.println("unrecognised request");
         }
     }
+
+    public void stop() throws IOException {
+        in.close();
+        out.close();
+        clientSocket.close();
+        serverSocket.close();
+    }
+
+    public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
+        Server server = new Server();
+        // server.stop();
+        server.start(8080);
+    }
+
+
 }
+
