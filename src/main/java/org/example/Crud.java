@@ -1,25 +1,40 @@
 package org.example;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.net.Socket;
+import java.sql.*;
 import java.time.LocalDateTime;
 
 public class Crud {
 
-    public boolean isUserWithId(Connection connection, long userId) throws SQLException {
-        Statement stmt = connection.createStatement();
-        ResultSet resultSet = stmt.executeQuery( "SELECT * FROM users WHERE ID=" + userId + ";" );
-        if (resultSet != null) {
+    Connection c;
+
+    public Connection connectToDatabase() throws ClassNotFoundException, SQLException {
+        Class.forName("org.postgresql.Driver");
+        c = DriverManager
+                .getConnection("jdbc:postgresql://localhost:5432/dev",
+                        "postgres", "postgres");
+        System.out.println("Opened database successfully");
+        return c;
+    }
+
+
+    public boolean isUserWithId(long userId) throws SQLException, ClassNotFoundException {
+
+        Connection connection = connectToDatabase();
+        Statement stmtIsUser = connection.createStatement();
+        ResultSet resultSet = stmtIsUser.executeQuery( "SELECT * FROM users WHERE ID= '" + userId + "';" );
+        if (resultSet.next()) {
+            System.out.println("There is a user with id: " + userId);
             return true;
         }
+        System.out.println("There is no user with id: " + userId);
         return false;
     }
 
-    public void getVehiclesAndInsurances(Connection connection, long userId) throws SQLException {
+    public String getVehiclesAndInsurances(long userId) throws SQLException, ClassNotFoundException {
+        Connection connection = connectToDatabase();
         Statement stmtVehicle = connection.createStatement();
-        ResultSet resultSetVehicles = stmtVehicle.executeQuery( "SELECT * FROM vehicles WHERE ID=" + userId + ";" );
+        ResultSet resultSetVehicles = stmtVehicle.executeQuery( "SELECT * FROM vehicles WHERE ID= '" + userId + "';" );
 
 
         while ( resultSetVehicles.next() ) {
@@ -37,7 +52,7 @@ public class Crud {
             System.out.println( "ADDITIONAL DATA = " + additionalData );
             System.out.println();
 
-            Statement stmtInsurance = connection.createStatement();
+            Statement stmtInsurance = null;
             ResultSet resultSetInsurances = stmtInsurance.executeQuery("SELECT * FROM insurances WHERE ID=" + idVehicle + ";");
             while (resultSetInsurances.next()) {
                 long idInsurance = resultSetInsurances.getInt("id");
@@ -58,6 +73,7 @@ public class Crud {
         resultSetVehicles.close();
         stmtVehicle.close();
 
+        return "test";
     }
 
 
