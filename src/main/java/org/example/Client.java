@@ -9,16 +9,22 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.file.LinkOption;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class Client {
     private Socket clientSocket;
-    private PrintWriter out;
+    public static PrintWriter out;
     private BufferedReader in;
+
+    private Connection c;
 
     public PrintWriter getOut() { return out; }
 
-    public void startConnection(String ip, int port) throws IOException {
+
+    public void startConnection(String ip, int port) throws IOException, SQLException, ClassNotFoundException {
 
         InetAddress inetAddress = InetAddress.getByName(ip);
         SocketAddress socketAddress = new InetSocketAddress(inetAddress, port);
@@ -60,7 +66,24 @@ public class Client {
             System.out.println(response);
             return response;
         }
+    }
 
+    public String getInfoFromDatabase(String userLogin) throws IOException {
+
+        String requestVehicles = "SELECT * FROM vehicles WHERE login=" + userLogin + ";";
+        out.write(requestVehicles);
+
+        StringBuffer stringBuffer = new StringBuffer();
+        while(true) {
+            int x = in.read();
+            if ( x == -1) {
+                return "No vehicles for user " + userLogin;
+            }
+            stringBuffer.append((char) x);
+            String response = stringBuffer.toString();
+            System.out.println(response);
+            return response;
+        }
     }
 
     public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
