@@ -1,6 +1,5 @@
 package org.example;
 
-import java.net.Socket;
 import java.sql.*;
 import java.time.LocalDateTime;
 
@@ -31,18 +30,20 @@ public class Crud {
         return false;
     }
 
-    public String getVehiclesAndInsurances(long userId) throws SQLException, ClassNotFoundException {
+    public String getVehiclesAndInsurances(String userLogin) throws SQLException, ClassNotFoundException {
         Connection connection = connectToDatabase();
         Statement stmtVehicle = connection.createStatement();
-        ResultSet resultSetVehicles = stmtVehicle.executeQuery( "SELECT * FROM vehicles WHERE ID= '" + userId + "';" );
+        Statement stmtInsurance = connection.createStatement();
 
+        String result = "";
 
+        ResultSet resultSetVehicles = stmtVehicle.executeQuery( "SELECT * FROM vehicles WHERE login='" + userLogin + "';" );
         while ( resultSetVehicles.next() ) {
             long idVehicle = resultSetVehicles.getInt("id");
             String  login = resultSetVehicles.getString("login");
             String brand  = resultSetVehicles.getString("brand");
             String model  = resultSetVehicles.getString("model");
-            String  additionalData = resultSetVehicles.getString("additionalData");
+            String  additionalData = resultSetVehicles.getString("additional_data");
             // LocalDateTime insertTime = resultSetVehicles.getTime("insertTime");
 
             System.out.println( "ID = " + idVehicle );
@@ -52,16 +53,22 @@ public class Crud {
             System.out.println( "ADDITIONAL DATA = " + additionalData );
             System.out.println();
 
-            Statement stmtInsurance = null;
+            String resultVehicle = "ID = " + idVehicle + "LOGIN = " + login + "BRAND = "
+                    + brand + "MODEL = " + model ;
+            result += resultVehicle;
+
+
             ResultSet resultSetInsurances = stmtInsurance.executeQuery("SELECT * FROM insurances WHERE ID=" + idVehicle + ";");
             while (resultSetInsurances.next()) {
                 long idInsurance = resultSetInsurances.getInt("id");
+                long idVehicleInsurance = resultSetInsurances.getInt("vehicle_id");
                 String  insurer = resultSetInsurances.getString("insurer");
                 float price  = resultSetInsurances.getFloat("price");
-                String  additionalDataInsurance = resultSetInsurances.getString("additionalData");
+                String  additionalDataInsurance = resultSetInsurances.getString("additional_data");
                 // LocalDateTime insertTime = resultSetInsurances.getTime("insertTime");
 
                 System.out.println( "ID = " + idInsurance );
+                System.out.println( "VEHICLE ID = " + idVehicleInsurance);
                 System.out.println( "INSURER = " + insurer );
                 System.out.println( "PRICE = " + price );
                 System.out.println( "ADDITIONAL DATA = " + additionalDataInsurance );
@@ -73,7 +80,8 @@ public class Crud {
         resultSetVehicles.close();
         stmtVehicle.close();
 
-        return "test";
+
+        return result;
     }
 
 
