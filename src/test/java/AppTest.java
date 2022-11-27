@@ -18,55 +18,29 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class AppTest {
     private static Client client;
 
-    static void populateDatabase() throws IOException, SQLException, ClassNotFoundException {
-        client = new Client();
-        client.startConnection("127.0.0.1", 5432);
-
-
-        PrintWriter out = client.getOut();
-
-        String requestUser = "INSERT INTO users (id, nick, login, password) VALUES (2, 'John','Doe', 'password' );";
-        client.out.write(requestUser);
-        client.out.flush();
-
-        String requestVehicle = "INSERT INTO vehicles (id, login, brand, model, ) VALUES (2, 'Doe', 'ford', 'mustang' );";
-        out.write(requestVehicle);
-        out.flush();
-
-        String requestInsurance = "INSERT INTO insurances (id, vehicle_id, insurer, price) VALUES (2, 1,'Unknown', 100 );";
-        out.write(requestInsurance);
-        out.flush();
-
-    }
-
     @Test
     public void startConnectionTest() throws IOException, SQLException, ClassNotFoundException {
         Client client = new Client();
-        client.startConnection("127.0.0.1", 5432);
+        client.startConnection("127.0.0.1", 6666);
     }
 
 
     @Test
     public void sendUserIdTest() throws IOException, SQLException, ClassNotFoundException {
-        populateDatabase();
+        Client client = new Client();
+        client.startConnection("127.0.0.1", 6666);
+
         Long userId = (long) 1;
-        assertEquals("No user with id: " + userId.toString(), client.sendUserId((long) userId) );
-    }
+        String response = client.sendUserId(userId);
 
-    @Test
-    public void getInfoFromDatabaseTest() throws IOException, SQLException, ClassNotFoundException {
-
-        populateDatabase();
-        String userLogin = "Doe";
         //Crud crud = new Crud();
-        //String result = crud.getVehiclesAndInsurances(userLogin);
+        //String response = crud.getVehiclesAndInsurances(crud.getUserLogin(userId));
 
-        String result = client.getInfoFromDatabase(userLogin);
-        String expected = "ID = " + 1 + "LOGIN = " + "Doe" + "BRAND = "
-                + "ford" + "MODEL = " + "mustang";
+        String expected =  "ID = " + 1 + "LOGIN = " + "Doe" + "BRAND = "
+                + "ford" + "MODEL = " + "mustang" + "\n";
 
-        assertEquals(expected, result);
-
+        assertEquals(expected, response);
     }
+
 
 }

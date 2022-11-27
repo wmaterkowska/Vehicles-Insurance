@@ -18,9 +18,7 @@ public class Client {
     private Socket clientSocket;
     public static PrintWriter out;
     private BufferedReader in;
-
     private Connection c;
-
     public PrintWriter getOut() { return out; }
 
 
@@ -35,7 +33,7 @@ public class Client {
         // clientSocket.bind(socketAddress);
         // clientSocket.connect(socketAddress);
 
-        out = new PrintWriter(clientSocket.getOutputStream());
+        out = new PrintWriter(clientSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
     }
 
@@ -46,50 +44,10 @@ public class Client {
     }
 
     public String sendUserId(Long userId) throws IOException, SQLException {
-        // out.print(userId);
-        // Long response = (long) in.read();
-        // return response;
+        out.println(userId);
 
-
-        String request = "SELECT * FROM users WHERE ID= '" + userId + "';";
-        out.write(request);
-        out.flush();
-
-        StringBuffer stringBuffer = new StringBuffer();
-        while(true) {
-            int x = in.read();
-            if ( x == -1) {
-                return "No user with id: " + userId.toString();
-            }
-            stringBuffer.append((char) x);
-            String response = stringBuffer.toString();
-            System.out.println(response);
-            return response;
-        }
-    }
-
-    public String getInfoFromDatabase(String userLogin) throws IOException {
-
-        String requestVehicles = "SELECT * FROM vehicles WHERE login=" + userLogin + ";";
-        out.write(requestVehicles);
-
-        StringBuffer stringBuffer = new StringBuffer();
-        while(true) {
-            int x = in.read();
-            if ( x == -1) {
-                return "No vehicles for user " + userLogin;
-            }
-            stringBuffer.append((char) x);
-            String response = stringBuffer.toString();
-            System.out.println(response);
-            return response;
-        }
-    }
-
-    public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
-        Client client = new Client();
-        client.startConnection("localhost", 5432);
-        client.sendUserId((long) 1);
+        String response = in.readLine();
+        return response;
     }
 
 }
