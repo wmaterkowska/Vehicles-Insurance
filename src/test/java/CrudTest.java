@@ -14,8 +14,8 @@ public class CrudTest {
          Crud crud = new Crud();
 
          Boolean response = crud.isUserWithId(userId);
-         Boolean expcted = true;
-         assertEquals(expcted, response);
+         Boolean expected = true;
+         assertEquals(expected, response);
     }
 
     @Test
@@ -26,10 +26,21 @@ public class CrudTest {
 
         String response = crud.getVehiclesAndInsurances(userLogin);
         String expected = "ID = " + 1 + "LOGIN = " + "Doe" + "BRAND = "
-                + "ford" + "MODEL = " + "mustang";
+                + "ford" + "MODEL = " + "mustang" + "\n";
 
         assertEquals(expected,response);
 
+    }
+
+    @Test
+    public void getUserLoginTest() throws SQLException, ClassNotFoundException {
+        Long userId = (long) 1;
+        Crud crud = new Crud();
+
+        String response = crud.getUserLogin(userId);
+        String expected = "Doe";
+
+        assertEquals(expected,response);
     }
 
 

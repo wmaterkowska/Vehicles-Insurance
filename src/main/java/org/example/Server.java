@@ -15,20 +15,21 @@ public class Server {
         serverSocket = new ServerSocket(port);
         clientSocket = serverSocket.accept();
 
-        out = new PrintWriter(clientSocket.getOutputStream());
+        out = new PrintWriter(clientSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-        Long userId = (long) in.read();
         Crud crud = new Crud();
-        if (userId != null) {
-            out.print(crud.isUserWithId(userId));
+        crud.connectToDatabase();
+
+        String userIdString =   in.readLine();
+        Long userId = Long.parseLong(userIdString);
+
+        if (crud.isUserWithId(userId) == true) {
+            String userLogin = crud.getUserLogin((long) userId);
+            out.print(crud.getVehiclesAndInsurances(userLogin));
         } else {
-            out.println("unrecognised request");
+            out.println("No such User");
         }
-
-
-
-
     }
 
     public void stop() throws IOException {
@@ -41,7 +42,7 @@ public class Server {
     public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
         Server server = new Server();
         // server.stop();
-        server.start(8080);
+        server.start(6666);
     }
 
 

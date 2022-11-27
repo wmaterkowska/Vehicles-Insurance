@@ -54,7 +54,7 @@ public class Crud {
             System.out.println();
 
             String resultVehicle = "ID = " + idVehicle + "LOGIN = " + login + "BRAND = "
-                    + brand + "MODEL = " + model ;
+                    + brand + "MODEL = " + model + "\n" ;
             result += resultVehicle;
 
 
@@ -84,5 +84,16 @@ public class Crud {
         return result;
     }
 
+    public String getUserLogin(Long userId) throws SQLException, ClassNotFoundException {
+        Connection connection = connectToDatabase();
+        Statement stmtUser = connection.createStatement();
+
+        ResultSet resultSetUser = stmtUser.executeQuery( "SELECT * FROM users WHERE ID= '" + userId + "';" );
+        String userLogin ="";
+        while ( resultSetUser.next() ) {
+            userLogin = resultSetUser.getString("login");
+        }
+        return userLogin;
+    }
 
 }
