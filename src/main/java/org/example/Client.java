@@ -1,5 +1,6 @@
 package org.example;
 
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,6 +14,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Scanner;
 
 public class Client {
     private Socket clientSocket;
@@ -45,9 +47,39 @@ public class Client {
 
     public String sendUserId(Long userId) throws IOException, SQLException {
         out.println(userId);
+        // out.print(userId);
 
-        String response = in.readLine();
+        int character;
+        StringBuilder data = new StringBuilder();
+
+
+
+        while ((character = in.read()) != -1) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            data.append((char) character);
+        }
+        String response = data.toString();
+
+        // String response = in.readLine();
         return response;
     }
 
+    public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
+        Client client = new Client();
+        client.startConnection("127.0.0.1", 6666);
+
+        Scanner input = new Scanner(System.in);
+        // System.out.println("If you want to start connection write: start");
+        // System.out.println("If you want to stop connection write: stop" );
+        System.out.println("If you want to send a userId write it" );
+
+        if (input.hasNextInt()) {
+            Long userId = (long) input.nextInt();
+            client.sendUserId(userId);
+        }
+    }
 }

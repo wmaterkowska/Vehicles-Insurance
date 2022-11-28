@@ -21,7 +21,8 @@ public class Crud {
 
         Connection connection = connectToDatabase();
         Statement stmtIsUser = connection.createStatement();
-        ResultSet resultSet = stmtIsUser.executeQuery( "SELECT * FROM users WHERE ID= '" + userId + "';" );
+
+        ResultSet resultSet = stmtIsUser.executeQuery( "SELECT * FROM users WHERE ID= " + userId + ";" );
         if (resultSet.next()) {
             System.out.println("There is a user with id: " + userId);
             return true;

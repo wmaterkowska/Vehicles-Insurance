@@ -21,14 +21,15 @@ public class Server {
         Crud crud = new Crud();
         crud.connectToDatabase();
 
+        // Long userId = (long) in.read();
         String userIdString =   in.readLine();
         Long userId = Long.parseLong(userIdString);
 
         if (crud.isUserWithId(userId) == true) {
-            String userLogin = crud.getUserLogin((long) userId);
+            String userLogin = crud.getUserLogin( userId );
             out.print(crud.getVehiclesAndInsurances(userLogin));
         } else {
-            out.println("No such User");
+            out.print("No such User");
         }
     }
 
