@@ -1,9 +1,15 @@
 package org.example;
 
-import java.sql.*;
-import java.time.LocalDateTime;
+import org.example.db.model.Insurance;
+import org.example.db.model.Vehicle;
 
-public class Crud {
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class DatabaseHandler {
 
     Connection c;
 
@@ -45,13 +51,14 @@ public class Crud {
             String brand  = resultSetVehicles.getString("brand");
             String model  = resultSetVehicles.getString("model");
             String  additionalData = resultSetVehicles.getString("additional_data");
-            // LocalDateTime insertTime = resultSetVehicles.getTime("insertTime");
+            Time insertTimeVehicle = resultSetVehicles.getTime("insertTime");
 
             System.out.println( "ID = " + idVehicle );
             System.out.println( "LOGIN = " + login );
             System.out.println( "BRAND = " + brand );
             System.out.println( "MODEL = " + model );
             System.out.println( "ADDITIONAL DATA = " + additionalData );
+            System.out.println( "INSERT TIME = " + insertTimeVehicle );
             System.out.println();
 
             String resultVehicle = "ID = " + idVehicle + "LOGIN = " + login + "BRAND = "
@@ -66,13 +73,14 @@ public class Crud {
                 String  insurer = resultSetInsurances.getString("insurer");
                 float price  = resultSetInsurances.getFloat("price");
                 String  additionalDataInsurance = resultSetInsurances.getString("additional_data");
-                // LocalDateTime insertTime = resultSetInsurances.getTime("insertTime");
+                Time insertTimeInsurance = resultSetInsurances.getTime("insertTime");
 
                 System.out.println( "ID = " + idInsurance );
                 System.out.println( "VEHICLE ID = " + idVehicleInsurance);
                 System.out.println( "INSURER = " + insurer );
                 System.out.println( "PRICE = " + price );
                 System.out.println( "ADDITIONAL DATA = " + additionalDataInsurance );
+                System.out.println( "INSERT TIME = " + insertTimeInsurance );
                 System.out.println();
             }
             resultSetInsurances.close();
@@ -81,9 +89,54 @@ public class Crud {
         resultSetVehicles.close();
         stmtVehicle.close();
 
-
         return result;
     }
+
+    public Map<Vehicle, List<Insurance>> getVehiclesAndInsurancesMap(String userLogin) throws SQLException, ClassNotFoundException {
+        Connection connection = connectToDatabase();
+        Statement stmtVehicle = connection.createStatement();
+        Statement stmtInsurance = connection.createStatement();
+
+        Map<Vehicle, List<Insurance>> vehiclesInsurancesMap = new HashMap<>();
+
+        ResultSet resultSetVehicles = stmtVehicle.executeQuery( "SELECT * FROM vehicles WHERE login='" + userLogin + "';" );
+        while ( resultSetVehicles.next() ) {
+
+            long idVehicle = resultSetVehicles.getInt("id");
+            String  login = resultSetVehicles.getString("login");
+            String brand  = resultSetVehicles.getString("brand");
+            String model  = resultSetVehicles.getString("model");
+            String  additionalData = resultSetVehicles.getString("additional_data");
+            Time insertTimeVehicle = resultSetVehicles.getTime("insertTime");
+
+            Vehicle vehicle = new Vehicle(idVehicle, login, brand, model, additionalData, insertTimeVehicle);
+
+
+            List<Insurance> insuranceListForVehicle = new ArrayList<>();
+            ResultSet resultSetInsurances = stmtInsurance.executeQuery("SELECT * FROM insurances WHERE ID=" + idVehicle + ";");
+            while (resultSetInsurances.next()) {
+                long idInsurance = resultSetInsurances.getInt("id");
+                long idVehicleInsurance = resultSetInsurances.getInt("vehicle_id");
+                String  insurer = resultSetInsurances.getString("insurer");
+                float price  = resultSetInsurances.getFloat("price");
+                String  additionalDataInsurance = resultSetInsurances.getString("additional_data");
+                Time insertTimeInsurance = resultSetInsurances.getTime("insertTime");
+
+                Insurance insurance = new Insurance(idInsurance, idVehicleInsurance, insurer, price, additionalDataInsurance, insertTimeInsurance);
+                insuranceListForVehicle.add(insurance);
+            }
+
+            vehiclesInsurancesMap.put(vehicle, insuranceListForVehicle);
+
+            resultSetInsurances.close();
+            stmtInsurance.close();
+        }
+        resultSetVehicles.close();
+        stmtVehicle.close();
+
+        return vehiclesInsurancesMap;
+    }
+
 
     public String getUserLogin(Long userId) throws SQLException, ClassNotFoundException {
         Connection connection = connectToDatabase();
