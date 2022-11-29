@@ -1,4 +1,6 @@
-package org.example;
+package server;
+
+import org.example.DatabaseHandler;
 
 import java.io.*;
 import java.net.*;
@@ -18,16 +20,16 @@ public class Server {
         out = new PrintWriter(clientSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-        Crud crud = new Crud();
-        crud.connectToDatabase();
+        DatabaseHandler databaseHandler = new DatabaseHandler();
+        databaseHandler.connectToDatabase();
 
-        // Long userId = (long) in.read();
+        Long userId = (long) in.read();
         String userIdString =   in.readLine();
-        Long userId = Long.parseLong(userIdString);
+        // Long userId = Long.parseLong(userIdString);
 
-        if (crud.isUserWithId(userId) == true) {
-            String userLogin = crud.getUserLogin( userId );
-            out.print(crud.getVehiclesAndInsurances(userLogin));
+        if (databaseHandler.isUserWithId(userId) == true) {
+            String userLogin = databaseHandler.getUserLogin( userId );
+            out.print(databaseHandler.getVehiclesAndInsurances(userLogin));
         } else {
             out.print("No such User");
         }
@@ -42,7 +44,6 @@ public class Server {
 
     public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
         Server server = new Server();
-        // server.stop();
         server.start(6666);
     }
 

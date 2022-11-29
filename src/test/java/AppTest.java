@@ -1,17 +1,9 @@
-import org.checkerframework.checker.units.qual.C;
-import org.example.Client;
-import org.example.Crud;
-import org.example.Server;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+
+import client.Client;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -32,9 +24,6 @@ public class AppTest {
 
         Long userId = (long) 1;
         String response = client.sendUserId(userId);
-
-        //Crud crud = new Crud();
-        //String response = crud.getVehiclesAndInsurances(crud.getUserLogin(userId));
 
         String expected =  "ID = " + 1 + "LOGIN = " + "Doe" + "BRAND = "
                 + "ford" + "MODEL = " + "mustang" + "\n";
